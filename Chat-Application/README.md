@@ -1,4 +1,4 @@
-# Yapper Chat (CSE 312)
+# Yapper Chat
 
 ### Starting the Project
 0. You may need to run `pip install flask` on your computer before starting the app
