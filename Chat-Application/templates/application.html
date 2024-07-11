@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico" />
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="/static/css/98.css" />
+	<link rel="stylesheet" href="https://unpkg.com/98.css" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+	<title id="website-title">Yap Chat</title>
+</head>
+
+<body onload="initializePostPage();">
+
+	<body>
+
+		<div class="center ontop" style="z-index: 999999;">
+			<div class="draggable window controlsWindow windowShake ontop" id="controlsWindow">
+				<div class="title-bar inactive" id="controlsWindow">
+					<div class="title-bar-text">
+						📢 Yappers Controls
+					</div>
+				</div>
+				<div class="window-body">
+
+
+					{% if username == "Guest" %}
+					<p>You are a <b>{{username|safe}}</b>!</p>
+					{% else %}
+					<div class="centerGilbert">
+						<p>Your Username is: <b>{{username|safe}}</b></p>
+						<img class="profileImage" src="{{ profile_picture_path }}" />
+					</div>
+					<br>
+					<label for="chat-image" style="font-weight: bold; padding-bottom: 2px"> 🖼️ Change profile
+						picture:</label>
+					<div class="centerGilbert">
+						<form action="/image-upload" id="image-chat" method="post" enctype="multipart/form-data">
+							<br>
+							<input id="chat-image" type="file" name="upload_profile_pic">
+							<input type="submit" value="Confirm">
+						</form>
+					</div>
+					{% endif %}
+					<hr>
+					<p><b> 📝 Create a post:</b></p>
+					<textarea class="create-text" style="padding: 3px; margin: 3px" placeholder="Yap here" cols="60"
+						rows="13" wrap="soft" id="text_area_post"></textarea>
+
+					<section class="field-row" style="justify-content: center; padding-top: 3px">
+						<button class="post-button" onclick="sendPost()" id="post_button">Post</button>
+					</section>
+					<hr>
+					{% if username == "Guest" %}
+					<p><b> 🔒 Log in:</b></p>
+					<section class="field-row" style="justify-content: flex-start">
+						<form action="/logout" method="post" enctype="application/x-www-form-urlencoded">
+							<input type="submit" value="Login" />
+						</form>
+					</section>
+					{% else %}
+					<p><b> 🔒 Log out:</b></p>
+					<section class="field-row" style="justify-content: flex-start">
+						<form action="/logout" method="post" enctype="application/x-www-form-urlencoded">
+							<input type="submit" value="Logout" />
+						</form>
+					</section>
+					{% endif %}
+				</div>
+
+			</div>
+		</div>
+
+		<div class="feed">
+			<div class="post-list" id="post-list">
+
+
+			</div>
+			<div class="post-list" id="enemy-list">
+
+
+			</div>
+			<div class="post-list" id="shop-list">
+
+
+			</div>
+		</div>
+
+		</div>
+		</div>
+
+		<div class="center ontop2" style="z-index: 999998;">
+			<div class="draggable window postwindow windowShake" id="window11">
+				<div class="title-bar inactive" id="window11">
+					<div class="title-bar-text">
+						📊 Statistics
+					</div>
+
+					<div class="title-bar-controls">
+						<button title="Statistics about the website!" aria-label="Help"></button>
+					</div>
+				</div>
+				<div class="window-body">
+					<p><b>🌎 Global Website Statistics</b></p>
+					<ul class="tree-view">
+						<li id="posts-created">Posts Created</li>
+						<li id="posts-deleted">Posts Deleted</li>
+						<li id="global-likes">Global Likes</li>
+						<li id="unique-users">Site Visits</li>
+						<li id="longest_life">Longest Gilbert Life</li>
+					</ul>
+					<hr>
+					<p><b>🧍 About You</b></p>
+					<ul class="tree-view">
+						<li>Username: <b>{{username|safe}}</b></li>
+						<li>Status: <b>yapping</b></li>
+					</ul>
+					<hr>
+					<p><b>❤️ Credits</b></p>
+					<ul class="tree-view">
+						<li><a href="https://jdan.github.io/98.css/" target="_blank">jdan.github.io/98.css/</a></li>
+						<li><a href="https://winsounds.com/windows-95-sounds/"
+								target="_blank">winsounds.com/windows-95-sounds/</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+
+
+		<div class="draggable window gilbert" style="top: 100px; left: 640px" id="gilbert_div">
+			<div class="title-bar">
+				<div class="title-bar-text" id="gilbert_title_bar">
+					❓ Gilbert
+				</div>
+
+				<div class="title-bar-controls">
+					<button aria-label="Close" onclick="hurtGilbert()" id="hurt_button" title="don't."></button>
+				</div>
+			</div>
+			<div class="window-body">
+				<div class="centerGilbert" id="gilbert_heading">
+					<p style="font-size: 65px; padding: 3px; margin: 3px; text-shadow: 2px 1px 2px rgba(3, 3, 3, 0.349)"
+						id="gilbert_emoji">❓</p>
+					<p id="gilbert_status"><b>Gilbert</b></p>
+					<i id="gilbert_stage_explanation"></i>
+				</div>
+
+				<hr>
+
+				<div id="aboutGilbertDiv" style="display: none;">
+
+					<p><b>📊 About Gilbert</b></p>
+
+					<ul class="tree-view" id="gilbert_stats">
+						<li id="norm_stats">
+							<b>Gilbert's Stats</b>
+							<ul>
+								<li id="gilbert_health_stats"></li>
+								<li id="gilbert_hunger_stats"></li>
+								<li id="gilbert_happiness_stats"></li>
+								<!-- <li id="gilbert_damage_stats"></li> -->
+							</ul>
+						</li>
+
+						<br>
+						<li id="misc_stats">
+							<b>Other</b>
+							<ul>
+								<li id="gilbert_level"></li>
+								<li id="gilbert_xp"></li>
+								<li id="gilbert_gold"></li>
+								<li id="gilbert_enemies_alive"></li>
+								<li id="gilbert_seconds_alive"></li>
+							</ul>
+						</li>
+
+
+					</ul>
+				</div>
+				<p id="gilb_thought_container"><b>💭 Gilbert's Thoughts</b>: <i id="gilbert_thoughts">i wish someone
+						would give me some food...</i></p>
+
+
+				<section class="field-row" style="justify-content: center; margin-top: 7px">
+					<button onclick="feedGilbert()" id="feed_button">Give Food</button>
+					<button onclick="petGilbert()" id="pet_button" style="display: none;">Give Treat</button>
+
+				</section>
+			</div>
+
+		</div>
+
+
+		<div class="window upgrades draggable" style="top: 140px; left: 880px" id="gilbert_upgrades" hidden>
+			<div class="title-bar cyan">
+				<div class="title-bar-text">
+					🛠️ Gilbert Upgrades
+				</div>
+
+				<div class="title-bar-controls">
+					<button aria-label="Help"></button>
+				</div>
+			</div>
+			<div class="window-body">
+				<div class="centerGilbert">
+					<p id="shop-gold-display">🪙 Your Gold: <b>133</b></p>
+				</div>
+				<menu role="tablist">
+					<li role="tab" id="shop-tab-label-3" onclick="setActiveWindow('3')" aria-selected="true"><a class="text-shadow">🌼 Health</a></li>
+					<li role="tab" id="shop-tab-label-6" onclick="setActiveWindow('6')"><a class="text-shadow">⛏️ Gold</a></li>
+					<li role="tab" id="shop-tab-label-2" onclick="setActiveWindow('2')"><a class="text-shadow">🛡️ Defense</a></li>
+					<li role="tab" id="shop-tab-label-1" onclick="setActiveWindow('1')"><a class="text-shadow" >🗡️ Damage</a></li>
+					<li role="tab" id="shop-tab-label-5" onclick="setActiveWindow('5')"><a class="text-shadow">🔮 Luck</a></li>
+					<li role="tab" id="shop-tab-label-4" onclick="setActiveWindow('4')"><a class="text-shadow">💗 Regen</a></li>
+					<li role="tab" id="shop-tab-label-4" onclick="setActiveWindow('7')"><a class="text-shadow">🥓 Food</a></li>
+
+				</menu>
+
+				<div class="window" role="tabpanel" id="shop-tab-1" hidden>
+					<div class="window-body">
+						<div class="centerGilbert">
+							<p class="shop-anim rotate-vert-center" style="font-size: 55px; padding: 3px; margin: 3px; text-shadow: 2px 1px 2px rgba(3, 3, 3, 0.549)">🗡️</p>
+							<p class="text-shadow" style="font-size: 13px" id="damage-upgrade-stat">Damage: <b> 1</b> / 10</p>
+							<i>Upgrade the amount of damage gilbert does to enemies!</i>
+							<section class="field-row" style="justify-content: center; margin-top: 7px">
+								<button class="like-btn" onclick="shopInteraction('damage')" id="damage-upgrade-button"><b>Upgrade</b> (30 gold)</button>
+							</section>
+						</div>
+					</div>
+				</div>
+
+				<div class="window" role="tabpanel" id="shop-tab-2" hidden>
+					<div class="window-body">
+						<div class="centerGilbert">
+							<p class="shop-anim rotate-vert-center" style="font-size: 55px; padding: 3px; margin: 3px; text-shadow: 2px 1px 2px rgba(3, 3, 3, 0.549)">🛡️</p>
+							<p class="text-shadow" style="font-size: 13px" id="defense-upgrade-stat">Defense: <b> 0 %</b></p>
+							<i>Upgrade how much damage gilbert blocks!</i>
+							<section class="field-row" style="justify-content: center; margin-top: 7px">
+								<button class="like-btn" onclick="shopInteraction('defense')" id="defense-upgrade-button"><b>Upgrade</b> (10 gold)</button>
+							</section>
+						</div>
+					</div>
+				</div>
+
+				<div class="window" role="tabpanel" id="shop-tab-3">
+					<div class="window-body">
+						<div class="centerGilbert">
+							<p class="shop-anim rotate-vert-center" style="font-size: 55px; padding: 3px; margin: 3px; text-shadow: 2px 1px 2px rgba(3, 3, 3, 0.549)">🌼</p>
+							<p class="text-shadow" style="font-size: 13px" id="health-upgrade-stat">Max Health: <b> 100</b> / 200</p>
+							<i>Upgrade gilbert's maximum health!</i>
+							<section class="field-row" style="justify-content: center; margin-top: 7px">
+								<button class="like-btn" onclick="shopInteraction('health')" id="health-upgrade-button"><b>Upgrade</b> (30 gold)</button>
+							</section>
+						</div>
+					</div>
+				</div>
+
+				<div class="window" role="tabpanel" id="shop-tab-4" hidden>
+					<div class="window-body">
+						<div class="centerGilbert">
+							<p class="shop-anim rotate-vert-center" style="font-size: 55px; padding: 3px; margin: 3px; text-shadow: 2px 1px 2px rgba(3, 3, 3, 0.549)">💗</p>
+							<p class="text-shadow" style="font-size: 13px" id="regen-upgrade-stat">Regeneration: <b> 0 </b> hp</p>
+							<i>Upgrade the amount of health gilbert heals every 5 seconds!</i>
+							<section class="field-row" style="justify-content: center; margin-top: 7px">
+								<button class="like-btn" onclick="shopInteraction('regen')" id="regen-upgrade-button"><b>Upgrade</b> (30 gold)</button>
+							</section>
+						</div>
+					</div>
+				</div>
+
+				<div class="window" role="tabpanel" id="shop-tab-5" hidden>
+					<div class="window-body">
+						<div class="centerGilbert">
+							<p class="shop-anim rotate-vert-center" style="font-size: 55px; padding: 3px; margin: 3px; text-shadow: 2px 1px 2px rgba(3, 3, 3, 0.549)">🔮</p>
+							<p class="text-shadow" style="font-size: 13px" id="luck-upgrade-stat">Loot Luck: <b> 5 %</b></p>
+							<i>Upgrade the chance to spawn loot instead of enemies!</i>
+							<section class="field-row" style="justify-content: center; margin-top: 7px">
+								<button class="like-btn" onclick="shopInteraction('luck')" id="luck-upgrade-button"><b>Upgrade</b> (30 gold)</button>
+							</section>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="window" role="tabpanel" id="shop-tab-6" hidden>
+					<div class="window-body">
+						<div class="centerGilbert">
+							<p class="shop-anim rotate-vert-center" style="font-size: 55px; padding: 3px; margin: 3px; text-shadow: 2px 1px 2px rgba(3, 3, 3, 0.549)">⛏️</p>
+							<p class="text-shadow" style="font-size: 13px" id="GoldFarm-stat">Gold gain: <b> 0 Gold</b></p>
+							<i>Upgrade the amount of Gold you make every 5 seconds!</i>
+							<section class="field-row" style="justify-content: center; margin-top: 7px">
+								<button class="like-btn" onclick="shopInteraction('GoldFarm')" id="GoldFarm-upgrade-button"><b>Upgrade</b> (10 gold)</button>
+							</section>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="window" role="tabpanel" id="shop-tab-7" hidden>
+				<div class="window-body">
+					<div class="centerGilbert">
+						<p class="shop-anim rotate-vert-center" style="font-size: 55px; padding: 3px; margin: 3px; text-shadow: 2px 1px 2px rgba(3, 3, 3, 0.549)">🥓</p>
+						<p class="text-shadow" style="font-size: 13px" id="Food-stat">Food gain: <b> 0 </b></p>
+						<i>Upgrade the amount of Food you eat every 4 seconds!</i>
+						<section class="field-row" style="justify-content: center; margin-top: 7px">
+							<button class="like-btn" onclick="shopInteraction('Food')" id="Food-button"><b>Upgrade</b> (100 gold)</button>
+						</section>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+
+		<div class="center ontop2" style="z-index: 999998;">
+			<div class="draggable window postwindow windowShake user-div" id="user-div">
+				<div class="title-bar inactive" id="user-div">
+					<div class="title-bar-text">
+						📋 Wall of Shame
+					</div>
+
+					<div class="title-bar-controls">
+						<button aria-label="Help" title="Users who've tried to break the website..."></button>
+					</div>
+				</div>
+				<div class="window-body">
+
+					<ul class="tree-view" id="user-list">
+					</ul>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="window taskbar">
+			<div class="window-body scroll" id="windowbody">
+				<p>🗣️🗣️🗣️🗣️🗣️ WELCOME YAPPERS!!!! 😁</p>
+				<p>WELCOME YAPPERS!!!! 😁</p>
+				<p>WELCOME YAPPERS!!!! 😁</p>
+				<p>WELCOME YAPPERS!!!! 😁</p>
+				<p>WELCOME YAPPERS!!!! 🗣️🗣️🗣️🗣️🗣️</p>
+			</div>
+		</div>
+		<script src="/static/js/function.js"></script>
+	</body>
+
+</html>
