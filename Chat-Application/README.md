@@ -9,7 +9,7 @@
 ### Link to Site
 https://yapper-chat.com/
 
-### Project Part 3 Objective 1 and 3
+### How to use the website
 1. Go to https://yapper-chat.com/, create an account
 2. Send 5-10 chat messages in chat
 3. Locate the window that says "Gilbert"
